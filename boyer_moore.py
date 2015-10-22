@@ -3,6 +3,7 @@ def boyer_moore(p, p_bm, t):
         p_bm=BoyerMoore object for p """
     i = 0
     occurrences = []
+    cnt = 0
     while i < len(t) - len(p) + 1:
         shift = 1
         mismatched = False
@@ -19,4 +20,5 @@ def boyer_moore(p, p_bm, t):
             skip_gs = p_bm.match_skip()
             shift = max(shift, skip_gs)
         i += shift
+    print cnt
     return occurrences

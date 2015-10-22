@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+import sys
+with open(sys.argv[1],'r') as ori:
+    with open(sys.argv[2],'r') as res:
+        o = ori.read()
+        r = res.read()
+        diff = 0
+        for i in xrange(len(o)):
+            if not o[i]==r[i]:
+                diff += 1
+        print diff*1.0/len(o)
+
