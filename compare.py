@@ -5,7 +5,7 @@ with open(sys.argv[1],'r') as ori:
         o = ori.read()
         r = res.read()
         diff = 0
-        for i in xrange(len(o)):
+        for i in xrange(min(len(o),len(r))):
             if not o[i]==r[i]:
                 diff += 1
         print diff*1.0/len(o)

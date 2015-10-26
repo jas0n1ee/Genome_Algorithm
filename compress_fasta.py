@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import math
 import sys
 import struct
@@ -47,22 +48,24 @@ def write_yuv(genome_a, genome_b, filename = 'output.yuv'):
     print "python decompress.py %d %d genome.yuv"%(w,h)
     return w, h
 if __name__ == '__main__':
-    with open('tair8.fas',"r") as f:
+    file_a = sys.argv[1]
+    file_b = sys.argv[2]
+    with open(file_a,"r") as f:
         genome_a = ''
         next(f)
         for read in f:
             if read[0] == '>':
                 break
             genome_a +=read.rstrip()
-    with open('tair8.txt',"w") as f:
+    with open(file_a.split('.')[0]+'.txt',"w") as f:
         f.write(genome_a)
-    with open('tair9.fas',"r") as f:
+    with open(file_b,"r") as f:
         genome_b = ''
         next(f)
         for read in f:
             if read[0] == '>':
                 break
             genome_b += read.rstrip()
-    with open('tair9.txt',"w") as f:
+    with open(file_b.split('.')[0]+'.txt',"w") as f:
         f.write(genome_b)
     write_yuv(genome_a, genome_b)
