@@ -3,10 +3,12 @@ import math
 import sys
 import struct
 import random
-alphabet = {'A':8, \
-            'C':24, \
-            'G':40, \
-            'T':56, \
+alphabet = {'A':25, \
+            'C':76, \
+            'G':127,\
+            'T':178,\
+            'Z':229}
+"""
             'U':72, \
             'R':88, \
             'Y':104,\
@@ -19,6 +21,7 @@ alphabet = {'A':8, \
             'H':216,\
             'V':232,\
             'N':248}
+"""
 
 
 
@@ -32,16 +35,24 @@ def write_yuv(genome_a, genome_b, filename = 'output.yuv'):
         return 
     with open(filename,"wb") as f:
         for i in xrange(len(genome_a)):
-            t = struct.pack("B",alphabet[genome_a[i]])
-            f.write(t)        
+            if genome_a[i] in alphabet:        
+                t = struct.pack("B",alphabet[genome_a[i]])
+                f.write(t)        
+            else:
+                t = struct.pack("B",229)
+                f.write(t)        
         for i in xrange(w*h - len(genome_a)+w*h/2):
-            t = struct.pack("B",248)
+            t = struct.pack("B",229)
             f.write(t)        
         for i in xrange(len(genome_b)):
-            t = struct.pack("B",alphabet[genome_b[i]])
-            f.write(t)        
+            if genome_b[i] in alphabet:        
+                t = struct.pack("B",alphabet[genome_b[i]])
+                f.write(t)        
+            else:
+                t = struct.pack("B",229)
+                f.write(t)        
         for i in xrange(w*h - len(genome_b)+w*h/2):
-            t = struct.pack("B",248)
+            t = struct.pack("B",229)
             f.write(t)  
     print "x265 --input %s --input-res %dx%d --fps 2 -p medium -q 22 -o genome.265 --psy-rd 0 --tune psnr --psnr"%(filename,w,h)
     print "ffmpeg -i %s -y genome.yuv"%(filename)

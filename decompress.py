@@ -1,7 +1,9 @@
+#!/usr/bin/env python
 import math
 import sys
 import struct
 import random
+"""
 alphabet = {0  :'A',\
             8  :'A',\
             24 :'C',\
@@ -19,8 +21,12 @@ alphabet = {0  :'A',\
             216:'H',\
             232:'V',\
             248:'N'}
-
-
+"""
+alphabet = {25 :'A', \
+            76 :'C', \
+            127:'G',\
+            178:'T',\
+            229:'Z'}
 
 def read_yuv(w,h,filename = 'output.yuv'):
     genome_a = [];
@@ -29,12 +35,12 @@ def read_yuv(w,h,filename = 'output.yuv'):
         for i in xrange(w*h):
             t = f.read(1)        
             r,=struct.unpack("B",t)
-            genome_a.append(alphabet[int(math.floor(r/16.0)*16+8)])
+            genome_a.append(alphabet[int(math.floor(r/51.001)*51+25)])
         f.read(w*h/2)        
         for i in xrange(w*h):
             t = f.read(1)        
             r,=struct.unpack("B",t)
-            genome_b.append(alphabet[int(math.floor(r/16.0)*16+8)])
+            genome_b.append(alphabet[int(math.floor(r/51.001)*51+25)])
         f.read(w*h/2)        
     return genome_a, genome_b
 if __name__ == '__main__':

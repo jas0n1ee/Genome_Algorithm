@@ -1,0 +1,12 @@
+diff --git a/source/encoder/frameencoder.cpp b/source/encoder/frameencoder.cpp
+index 681a50a..119b8b8 100644
+--- a/source/encoder/frameencoder.cpp
++++ b/source/encoder/frameencoder.cpp
+@@ -365,6 +365,7 @@ void FrameEncoder::compressFrame()
+      * frames ahead of it in encode order have called rateControlEnd() */
+     int qp = m_top->m_rateControl->rateControlStart(m_frame, &m_rce, m_top);
+     m_rce.newQp = qp;
++    qp = m_param->rc.qp;
+ 
+     /* Clip slice QP to 0-51 spec range before encoding */
+     slice->m_sliceQp = x265_clip3(-QP_BD_OFFSET, QP_MAX_SPEC, qp);
