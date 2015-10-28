@@ -9,5 +9,6 @@ with open(sys.argv[1],'r') as ori:
             if not o[i]==r[i]:
                 if o[i] in ['A','T','C','G']:
                     diff += 1
-        print diff*1.0/len(o)
+                    print o[i], r[i]
+        print diff*1.0/min(len(o),len(r))
 
