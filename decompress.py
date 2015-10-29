@@ -3,51 +3,44 @@ import math
 import sys
 import struct
 import random
-"""
-alphabet = {0  :'A',\
-            8  :'A',\
-            24 :'C',\
-            40 :'G',\
-            56 :'T',\
-            72 :'U',\
-            88 :'R',\
-            104:'Y',\
-            120:'K',\
-            136:'M',\
-            152:'S',\
-            168:'W',\
-            184:'B',\
-            200:'D',\
-            216:'H',\
-            232:'V',\
-            248:'N'}
-"""
+import json
 alphabet = {25 :'A', \
             76 :'C', \
             127:'G',\
             178:'T',\
             229:'Z'}
 
-def read_yuv(w,h,filename = 'output.yuv'):
-    genome_a = [];
-    genome_b = [];
-    with open(filename,"rb") as f:
-        for i in xrange(w*h):
-            t = f.read(1)        
-            r,=struct.unpack("B",t)
-            genome_a.append(alphabet[int(math.floor(r/51.001)*51+25)])
-        f.read(w*h/2)        
-        for i in xrange(w*h):
-            t = f.read(1)        
-            r,=struct.unpack("B",t)
-            genome_b.append(alphabet[int(math.floor(r/51.001)*51+25)])
-        f.read(w*h/2)        
-    return genome_a, genome_b
+def compare(filea,fileb):
+    with open(filea,'r') as ori:
+        with open(fileb,'r') as res:
+            o = ori.read()
+            r = res.read()
+            diff = 0
+            for i in xrange(min(len(o),len(r))):
+                if not o[i]==r[i]:
+                    if o[i] in ['A','T','C','G']:
+                        diff += 1
+            return diff*1.0/min(len(o),len(r))
+
+def read_yuv(w,h,file_handle):
+    genome = []
+    f = file_handle
+    for i in xrange(w*h):
+        t = f.read(1)        
+        r,=struct.unpack("B",t)
+        genome.append(alphabet[int(math.floor(r/51.001)*51+25)])
+    f.read(w*h/2)        
+    return ''.join(genome)
 if __name__ == '__main__':
-    w = int(sys.argv[1])
-    h = int(sys.argv[2])
-    genome_a, genome_b = read_yuv(w, h, sys.argv[3])
-    with open('decomp_a.txt',"w") as f:
-        f.write(''.join(genome_a))
-    with open('decomp_b.txt',"w") as f:
-        f.write(''.join(genome_b))
+    with open('config.json','r') as c:
+        config = json.loads(c.read())
+    frame_cnt = config['frame']
+    f_name = config['name']
+    size = config['size']
+    with open('genome.yuv','rb') as stream:
+        for i in xrange(frame_cnt):
+            g_name = f_name[i].split('.')[0]
+            with open('decomp_'+g_name+'.txt','w') as f:
+                f.write(read_yuv(size[0],size[1],stream))
+            print compare(g_name+'.txt','decomp_'+g_name+'.txt')
+
