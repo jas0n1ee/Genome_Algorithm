@@ -36,8 +36,8 @@ def read_yuv(w,h,filename,hil):
 if __name__ == '__main__':
     w = int(sys.argv[1])
     h = int(sys.argv[2])
-    hil = sys.argv[4]
-    genome_a, genome_b = read_yuv(w, h, sys.argv[3], hil)
+    cur = sys.argv[4]
+    genome_a, genome_b = read_yuv(w, h, sys.argv[3], cur)
     with open('decomp_a.txt',"w") as f:
         f.write(''.join(genome_a))
     with open('decomp_b.txt',"w") as f:

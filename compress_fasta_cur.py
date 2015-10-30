@@ -51,7 +51,11 @@ def write_yuv(genome_a, genome_b, hil, filename = 'output.yuv'):
 if __name__ == '__main__':
     file_a = sys.argv[1]
     file_b = sys.argv[2]
-    hil = sys.argv[3]
+    cur = sys.argv[3]
+    with open(cur,"r") as f:
+        m_cur = [];
+        for line in f:
+            m_cur.append(int(float(line)))
     with open(file_a,"r") as f:
         genome_a = ''
         next(f)
@@ -60,7 +64,7 @@ if __name__ == '__main__':
                 break
             genome_a +=read.rstrip()
     with open(file_a.split('.')[0]+'.txt',"w") as f:
-        f.write(genome_a)
+        f.write(genome_a[:len(m_cur)])
     with open(file_b,"r") as f:
         genome_b = ''
         next(f)
@@ -69,10 +73,6 @@ if __name__ == '__main__':
                 break
             genome_b += read.rstrip()
     with open(file_b.split('.')[0]+'.txt',"w") as f:
-        f.write(genome_b)
-    with open(hil,"r") as f:
-        m_hil = [];
-        for line in f:
-            m_hil.append(int(float(line)))
-    print len(m_hil)
-    write_yuv(genome_a, genome_b, m_hil)
+        f.write(genome_b[:len(m_cur)])
+    write_yuv(genome_a, genome_b, m_cur)
+    print len(m_cur)
