@@ -3,80 +3,50 @@ import math
 import sys
 import struct
 import random
+import json
 alphabet = {'A':25, \
             'C':76, \
             'G':127,\
             'T':178,\
             'Z':229}
-"""
-            'U':72, \
-            'R':88, \
-            'Y':104,\
-            'K':120,\
-            'M':136,\
-            'S':152,\
-            'W':168,\
-            'B':184,\
-            'D':200,\
-            'H':216,\
-            'V':232,\
-            'N':248}
-"""
-
-
-
-def write_yuv(genome_a, genome_b, filename = 'output.yuv'):
-    length = max(len(genome_a), len(genome_b))
-    block = math.ceil(length/64.0/64.0)
-    w = int(math.ceil(math.sqrt(block))*64)
-    h = w
-    if w*h < length:
-        print "error length"
-        return 
-    with open(filename,"wb") as f:
-        for i in xrange(len(genome_a)):
-            if genome_a[i] in alphabet:        
-                t = struct.pack("B",alphabet[genome_a[i]])
-                f.write(t)        
-            else:
-                t = struct.pack("B",229)
-                f.write(t)        
-        for i in xrange(w*h - len(genome_a)+w*h/2):
+def write_yuv(genome_a, w, h, file_handle):
+    for i in xrange(len(genome_a)):
+        if genome_a[i] in alphabet:        
+            t = struct.pack("B",alphabet[genome_a[i]])
+            file_handle.write(t)        
+        else:
             t = struct.pack("B",229)
-            f.write(t)        
-        for i in xrange(len(genome_b)):
-            if genome_b[i] in alphabet:        
-                t = struct.pack("B",alphabet[genome_b[i]])
-                f.write(t)        
-            else:
-                t = struct.pack("B",229)
-                f.write(t)        
-        for i in xrange(w*h - len(genome_b)+w*h/2):
-            t = struct.pack("B",229)
-            f.write(t)  
-    print "x265 --input %s --input-res %dx%d --fps 2 -p medium -q 22 -o genome.265 --psy-rd 0 --tune psnr --psnr"%(filename,w,h)
-    print "ffmpeg -i %s -y genome.yuv"%(filename)
-    print "python decompress.py %d %d genome.yuv"%(w,h)
-    return w, h
+            file_handle.write(t)        
+    for i in xrange(w*h - len(genome_a)+w*h/2):
+        t = struct.pack("B",229)
+        file_handle.write(t)        
+
 if __name__ == '__main__':
-    file_a = sys.argv[1]
-    file_b = sys.argv[2]
-    with open(file_a,"r") as f:
-        genome_a = ''
-        next(f)
-        for read in f:
-            if read[0] == '>':
-                break
-            genome_a +=read.rstrip()
-    with open(file_a.split('.')[0]+'.txt',"w") as f:
-        f.write(genome_a)
-    with open(file_b,"r") as f:
-        genome_b = ''
-        next(f)
-        for read in f:
-            if read[0] == '>':
-                break
-            genome_b += read.rstrip()
-    with open(file_b.split('.')[0]+'.txt',"w") as f:
-        f.write(genome_b)
-    write_yuv(genome_a, genome_b)
+    with open("output.yuv","wb") as out:
+        max_len = 0
+        g_list = []
+        for i in xrange(1,len(sys.argv)):
+            with open(sys.argv[i],"r") as f:
+                genome = ''
+                next(f)
+                for read in f:
+                    if read[0] == '>':
+                        break
+                    genome +=read.rstrip()
+            with open(sys.argv[i].split('.')[0]+'.txt',"w") as f:
+                f.write(genome)
+            g_list.append(genome)
+            max_len = max(max_len, len(genome))
+        block = math.ceil(max_len/64.0/64.0)
+        w = int(math.ceil(math.sqrt(block))*64)
+        h = w
+        for i in xrange(len(sys.argv)-1):
+            write_yuv(g_list[i],w,h,out)
+        config={}
+        config['size'] = [w,h]
+        config['frame'] = len(sys.argv)-1
+        config['name'] = sys.argv[1:]
+        with open("config.json",'w') as c:
+            c.write(json.dumps(config))
+        print "Size: %dx%d; Frame:%d"%(w,h,len(sys.argv)-1)
+        

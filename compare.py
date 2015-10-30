@@ -11,4 +11,3 @@ with open(sys.argv[1],'r') as ori:
                     diff += 1
                     #print o[i], r[i]
         print diff*1.0/min(len(o),len(r))
-
