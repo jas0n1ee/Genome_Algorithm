@@ -8,4 +8,4 @@ function draw_cureve(m)
         x = [x r];
         y = [y c];
     end
-    plot(x,y)
+    plot(y,x)
